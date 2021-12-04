@@ -72,13 +72,11 @@ const App = () => {
           </button>
         </div>
       );
-    } else if (currentAccount && !characterNFT) {
-      return <SelectCharacter setCharacterNFT={setCharacterNFT} />;
-    } else if (currentAccount && characterNFT) {
-      return (
-        <Arena characterNFT={characterNFT} setCharacterNFT={setCharacterNFT} />
-      );
     }
+    
+    return characterNFT ? 
+      <Arena characterNFT={characterNFT} setCharacterNFT={setCharacterNFT} /> :
+      <SelectCharacter setCharacterNFT={setCharacterNFT} />;      
   };
 
   // Actions
@@ -88,14 +86,9 @@ const App = () => {
 
       if (!ethereum) {
         console.log('Make sure you have MetaMask!');
-        setIsLoading(false);
-        return;
       } else {
-        console.log('We have the ethereum object', ethereum);
-
         const accounts = await ethereum.request({ method: 'eth_accounts' });
-
-        if (accounts.length !== 0) {
+        if (accounts.length) {
           const account = accounts[0];
           console.log('Found an authorized account:', account);
           setCurrentAccount(account);
@@ -105,8 +98,9 @@ const App = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const connectWalletAction = async () => {
